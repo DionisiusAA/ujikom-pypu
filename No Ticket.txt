@@ -1,0 +1,30 @@
+1. mengidentifikasi masalah yang ada: No Ticket tidak urut
+
+2. menjelaskan penyebab masalah tersebut: 
+
+(TicketController.php)
+
+$tickets = $query->latest()->paginate(10); //tampilan yang paling baru per 10 halaman 
+
+'ticket_number' => 'TIK-' . now()->format('Y') . '-' . strtoupper(Str::random(4)), //tipe data varchar
+
+3. memperbaiki masalah yang ditemukan: 
+
+$tickets = $query->orderBy('ticket_number', 'asc')->paginate(10);
+
+$lastTicket = Ticket::latest('id')->first();
+
+$nextNumber = $lastTicket ? (intval(substr($lastTicket->ticket_number, -4)) + 1) : 1;
+
+(php artisan tinker)
+
+$tickets = \App\Models\Ticket::orderBy('id')->get();
+
+foreach ($tickets as $index => $ticket) {
+    $number = str_pad($index + 1, 4, '0', STR_PAD_LEFT);
+    $ticket->update([
+        'ticket_number' => 'TIK-' . now()->format('Y') . '-' . $number
+    ]);
+}
+
+4. memastikan aplikasi dapat berjalan dengan lebih baik setelah perbaikan: No Ticket menjadi urut
