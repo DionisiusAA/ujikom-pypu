@@ -1,0 +1,33 @@
+1. mengidentifikasi masalah yang ada: Perubahan hak akses
+
+2. menjelaskan penyebab masalah tersebut: "Role" belum masuk User.php
+
+3. memperbaiki masalah yang ditemukan: 
+
+'role', //User.php
+
+(RoleMiddleware.php)
+
+public function handle(Request $request, Closure $next, string $role)
+    {
+        if (auth()->user()->role !== $role) {
+            abort(403, 'Unauthorized');
+        }
+
+        return $next($request);
+    }
+
+(app.php)
+
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->alias([
+        'role' => \App\Http\Middleware\RoleMiddleware::class,
+        ]);
+    })
+
+(web.php)
+(index.blade.php)
+(app.blade.php)
+
+4. memastikan aplikasi dapat berjalan dengan lebih baik setelah perbaikan: Staff tidak bisa create ticket dan User tidak bisa view & edit
+ 
